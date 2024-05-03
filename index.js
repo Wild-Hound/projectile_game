@@ -129,12 +129,30 @@ const animate = () => {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   player.draw();
 
-  projectiles.forEach((projectile) => {
+  projectiles.forEach((projectile, index) => {
     projectile.update();
+
+    if (projectile.x > canvas.width || projectile.y > canvas.height) {
+      projectiles.splice(index, 1);
+    }
   });
 
-  enemies.forEach((enemy) => {
+  enemies.forEach((enemy, enemyIndex) => {
     enemy.update();
+
+    projectiles.forEach((projectile, projectileIndex) => {
+      const distance = Math.hypot(
+        projectile.x - enemy.x,
+        projectile.y - enemy.y
+      );
+
+      if (distance - enemy.radius - projectile.radius < 1) {
+        setTimeout(() => {
+          enemies.splice(enemyIndex, 1);
+          projectiles.splice(projectileIndex, 1);
+        }, 0);
+      }
+    });
   });
 };
 
