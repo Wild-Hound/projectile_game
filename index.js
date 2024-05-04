@@ -121,14 +121,16 @@ const spawnEnemy = () => {
 };
 
 //animation
+let animationID;
 const projectiles = [];
 const enemies = [];
 const animate = () => {
-  requestAnimationFrame(animate);
+  animationID = requestAnimationFrame(animate);
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   player.draw();
 
+  // projectile collision
   projectiles.forEach((projectile, index) => {
     projectile.update();
 
@@ -137,16 +139,30 @@ const animate = () => {
     }
   });
 
+  // enemies collision
   enemies.forEach((enemy, enemyIndex) => {
     enemy.update();
 
+    //calculate collision with player
+    const distanceBeTweenPlayerAndEnemy = Math.hypot(
+      player.x - enemy.x,
+      player.y - enemy.y
+    );
+    if (distanceBeTweenPlayerAndEnemy - enemy.radius - player.radius < 1) {
+      cancelAnimationFrame(animationID);
+    }
+
+    //calculate collision with projectiles
     projectiles.forEach((projectile, projectileIndex) => {
-      const distance = Math.hypot(
+      const distanceBeTweenProjectileAndEnemy = Math.hypot(
         projectile.x - enemy.x,
         projectile.y - enemy.y
       );
 
-      if (distance - enemy.radius - projectile.radius < 1) {
+      if (
+        distanceBeTweenProjectileAndEnemy - enemy.radius - projectile.radius <
+        1
+      ) {
         setTimeout(() => {
           enemies.splice(enemyIndex, 1);
           projectiles.splice(projectileIndex, 1);
