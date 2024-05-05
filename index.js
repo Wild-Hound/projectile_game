@@ -173,6 +173,15 @@ const animate = () => {
         distanceBeTweenProjectileAndEnemy - enemy.radius - projectile.radius <
         1
       ) {
+        if (enemy.radius - 10 > 10) {
+          gsap.to(enemy, {
+            radius: enemy.radius - 10,
+          });
+          setTimeout(() => {
+            projectiles.splice(projectileIndex, 1);
+          }, 0);
+          return;
+        }
         setTimeout(() => {
           enemies.splice(enemyIndex, 1);
           projectiles.splice(projectileIndex, 1);
