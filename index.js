@@ -69,6 +69,40 @@ class Enemy {
   }
 }
 
+class Particle {
+  constructor(x, y, radius, color, velocity, ctx) {
+    this.x = x;
+    this.y = y;
+    this.radius = radius;
+    this.color = color;
+    this.velocity = velocity;
+    this.ctx = ctx;
+    this.alpha = 1;
+    this.friction = 0.99;
+  }
+
+  draw() {
+    const ctx = this.ctx;
+
+    ctx.save();
+    ctx.globalAlpha = 0.1;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+    ctx.fillStyle = this.color;
+    ctx.fill();
+    ctx.restore();
+  }
+
+  update() {
+    this.draw();
+    this.velocity.x *= this.friction;
+    this.velocity.y *= this.friction;
+    this.x = this.x + this.velocity.x;
+    this.y = this.y + this.velocity.y;
+    this.alpha -= 0.01;
+  }
+}
+
 //scene objects
 const canvas = document.querySelector("canvas");
 canvas.width = innerWidth;
@@ -132,12 +166,22 @@ const spawnEnemy = () => {
 let animationID;
 const projectiles = [];
 const enemies = [];
+const particles = [];
 const animate = () => {
   animationID = requestAnimationFrame(animate);
 
   ctx.fillStyle = "rgba(0,0,0,0.1)";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   player.draw();
+
+  //draw particles
+  particles.forEach((particle, index) => {
+    if (particle.alpha <= 0) {
+      particles.splice(index, 1);
+      return;
+    }
+    particle.update();
+  });
 
   // projectile collision
   projectiles.forEach((projectile, index) => {
@@ -173,6 +217,25 @@ const animate = () => {
         distanceBeTweenProjectileAndEnemy - enemy.radius - projectile.radius <
         1
       ) {
+        //create explosion effect
+        for (let i = 0; i < enemy.radius * 2; i++) {
+          const particleVelocity = {
+            x: (Math.random() - 0.5) * (Math.random() * 6),
+            y: (Math.random() - 0.5) * (Math.random() * 6),
+          };
+          particles.push(
+            new Particle(
+              projectile.x,
+              projectile.y,
+              Math.random() * 5,
+              enemy.color,
+              particleVelocity,
+              ctx
+            )
+          );
+        }
+
+        //shrink enemy on hit
         if (enemy.radius - 10 > 10) {
           gsap.to(enemy, {
             radius: enemy.radius - 10,
@@ -182,6 +245,8 @@ const animate = () => {
           }, 0);
           return;
         }
+
+        //remove enemy and projectile
         setTimeout(() => {
           enemies.splice(enemyIndex, 1);
           projectiles.splice(projectileIndex, 1);
