@@ -104,8 +104,12 @@ class Particle {
 }
 
 //scene objects
-const canvas = document.querySelector("canvas");
+
 const gameScore = document.getElementById("game_score");
+const startGameButton = document.getElementById("start_game_button");
+const modal = document.getElementById("modal_wrapper");
+const finalScore = document.getElementById("final_score");
+const canvas = document.querySelector("canvas");
 const ctx = canvas.getContext("2d");
 
 canvas.width = innerWidth;
@@ -134,6 +138,12 @@ addEventListener("click", (e) => {
     ctx
   );
   projectiles.push(projectile);
+});
+startGameButton.addEventListener("click", (e) => {
+  // console.log("hello can you hear me?");
+  modal.style.display = "none";
+  animate();
+  spawnEnemy();
 });
 
 const spawnEnemy = () => {
@@ -206,6 +216,8 @@ const animate = () => {
       player.y - enemy.y
     );
     if (distanceBeTweenPlayerAndEnemy - enemy.radius - player.radius < 1) {
+      finalScore.innerText = score;
+      modal.style.display = "flex";
       cancelAnimationFrame(animationID);
     }
 
@@ -259,6 +271,3 @@ const animate = () => {
     });
   });
 };
-
-animate();
-spawnEnemy();
