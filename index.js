@@ -105,9 +105,11 @@ class Particle {
 
 //scene objects
 const canvas = document.querySelector("canvas");
+const gameScore = document.getElementById("game_score");
+const ctx = canvas.getContext("2d");
+
 canvas.width = innerWidth;
 canvas.height = innerHeight;
-const ctx = canvas.getContext("2d");
 
 const centerX = canvas.width / 2;
 const centerY = canvas.height / 2;
@@ -167,6 +169,7 @@ let animationID;
 const projectiles = [];
 const enemies = [];
 const particles = [];
+let score = 0;
 const animate = () => {
   animationID = requestAnimationFrame(animate);
 
@@ -217,6 +220,7 @@ const animate = () => {
         distanceBeTweenProjectileAndEnemy - enemy.radius - projectile.radius <
         1
       ) {
+        gameScore.innerText = ++score;
         //create explosion effect
         for (let i = 0; i < enemy.radius * 2; i++) {
           const particleVelocity = {
