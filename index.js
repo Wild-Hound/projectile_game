@@ -118,9 +118,6 @@ canvas.height = innerHeight;
 const centerX = canvas.width / 2;
 const centerY = canvas.height / 2;
 
-//player objects
-const player = new Player(centerX, centerY, 15, "white", ctx);
-
 //player events
 addEventListener("click", (e) => {
   const angle = Math.atan2(e.clientY - centerY, e.clientX - centerX);
@@ -142,6 +139,7 @@ addEventListener("click", (e) => {
 startGameButton.addEventListener("click", (e) => {
   // console.log("hello can you hear me?");
   modal.style.display = "none";
+  init();
   animate();
   spawnEnemy();
 });
@@ -174,12 +172,24 @@ const spawnEnemy = () => {
   }, 1000);
 };
 
-//animation
+//game objects
 let animationID;
-const projectiles = [];
-const enemies = [];
-const particles = [];
+let player = new Player(centerX, centerY, 15, "white", ctx);
+let projectiles = [];
+let enemies = [];
+let particles = [];
 let score = 0;
+
+const init = () => {
+  player = new Player(centerX, centerY, 15, "white", ctx);
+  projectiles = [];
+  enemies = [];
+  particles = [];
+  score = 0;
+  gameScore.innerText = score;
+  finalScore.innerText = score;
+};
+
 const animate = () => {
   animationID = requestAnimationFrame(animate);
 
